@@ -1,8 +1,6 @@
 # Knitter
-
-## Overview
 ![logo](./docs/images/knitter.png)
-Knitter 
+## Overview
 - is a [CNI](https://github.com/containernetworking/cni) plugin to support multiple network interfaces in a [Kubernetes](https://github.com/kubernetes/kubernetes) pod.
 - provides the ability for a pod (e.g., VNF in pod) to attach to high-performance networks. 
 - allows users specifying customized networks according to their infrastructure.
