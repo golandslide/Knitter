@@ -1,16 +1,28 @@
-# Old-skool build tools.
-#
-# Targets (see each target for more information):
-#   all: Build code.
-#   build: Build code.
-#   check: Run build, verify and tests.
-#   test: Run tests.
-#   clean: Clean up.
-#   release: Build release.
-
 OUT_DIR = _output
 
 export GOFLAGS
+
+default: help
+
+help:
+	@echo "Usage: make <target>"
+	@echo
+#	@echo " * 'install'        - Install binaries to system locations"
+	@echo " * 'build'          - Build all knitter related binaries(e.g. knitter-manager,knitter-agent,knitter-plugin)"
+	@echo " * 'test'           - Test knitter with unit test"
+	@echo " * 'test-e2e'       - Test knitter with e2e test"
+	@echo " * 'clean'          - Clean artifacts"
+	@echo " * 'verify'         - Execute the source code verification tools(e.g. gofmt,lint,govet)"
+	@echo " * 'install.tools'  - Install tools used by verify(e.g. gometalinter)"
+
+
+
+check-gopath:
+ifndef GOPATH
+        $(error GOPATH is not set)
+endif
+.PHONY: check-gopath
+
 
 # Build code.
 #
@@ -20,18 +32,44 @@ export GOFLAGS
 # Example:
 #   make
 #   make all
-all build:
-	hack/build-go.sh
+all build: knitter-manager knitter-agent knitter-plugin
 .PHONY: all build
+
+knitter-plugin:
+	script/knitter.sh build
+.PHONY: knitter-plugin
+
+knitter-manager:
+	script/manager.sh build
+.PHONY: knitter-manager
+
+knitter-agent:
+	script/agent.sh build
+.PHONY: knitter-agent
+
+
+lint: check-gopath
+	@echo "checking lint"
+	@./hack/verify-lint.sh
+
+gofmt:
+	@echo "checking gofmt"
+	@./hack/verify-gofmt.sh
+
+golint: check-gopath
+	@echo "checking golint"
+	@./hack/verify-golint.sh
+
+govet:
+	@echo "checking govet"
+	@./hack/verify-govet.sh
+
 
 # Verify if code is properly organized.
 #
 # Example:
 #   make verify
-verify: build
-	hack/verify-gofmt.sh
-	hack/verify-golint.sh
-	hack/verify-govet.sh
+verify: gofmt lint govet 
 .PHONY: verify
 
 # Install travis dependencies
@@ -62,9 +100,20 @@ check: verify test
 # Example:
 #   make test
 #   make test WHAT=pkg/docker TESTFLAGS=-v 
-test: 
-	hack/test-go.sh $(WHAT) $(TESTS) $(TESTFLAGS)
+test:
+	go test -timeout=20m -race ./pkg/... ./knitter-agent/... ./knitter-manager/... ./knitter-plugin/... $(BUILD_TAGS) $(GO_LDFLAGS) $(GO_GCFLAGS) 
 .PHONY: test
+
+install-tools: install-gometalinter
+.PHONY: install-tools
+
+# install gometailinter tool
+# Example:
+# make install-gometalinter
+
+install-gometalinter:
+	go get -u github.com/alecthomas/gometalinter
+	gometalinter --install
 
 
 # Remove all build artifacts.
