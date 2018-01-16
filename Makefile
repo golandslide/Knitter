@@ -7,13 +7,12 @@ default: help
 help:
 	@echo "Usage: make <target>"
 	@echo
-	@echo "'build'          - Build all knitter related binaries(e.g. knitter-manager,knitter-agent,knitter-plugin)"
+	@echo " 'build'          - Build all knitter related binaries(e.g. knitter-manager,knitter-agent,knitter-plugin)"
 	@echo " 'test'           - Test knitter with unit test"
 	@echo " 'test-e2e'       - Test knitter with e2e test"
 	@echo " 'clean'          - Clean artifacts"
-	@echo " 'verify'         - Execute the source code verification tools(e.g. gofmt,lint,govet)"
-	@echo " 'install-extra'  - Install tools used by verify(e.g. gometalinter)"
-
+	@echo " 'verify'         - Excute static code checking tools(e.g. gofmt,lint,govet)"
+	@echo " 'install-extra'  - Install extra tools used by verify(e.g. gometalinter)"
 
 
 check-gopath:
@@ -23,10 +22,7 @@ endif
 .PHONY: check-gopath
 
 
-# Build code.
-#
-# Args:
-#   GOFLAGS: Extra flags to pass to 'go' when building.
+# Build all knitter components.
 #
 # Example:
 #         make build
@@ -34,7 +30,7 @@ endif
 all build: knitter-manager knitter-agent knitter-plugin
 .PHONY: all build
 
-# Build knitter-plugin
+# Build knitter-plugin component
 #
 # Example:
 #        make knitter-plugin
@@ -42,14 +38,15 @@ knitter-plugin:
 	script/knitter.sh build
 .PHONY: knitter-plugin
 
-# Build knitter-manager
+# Build knitter-manager component
 #
 # Example:
 #         make knitter-manager
 knitter-manager:
 	script/manager.sh build
 .PHONY: knitter-manager
-# Build knitter-agent
+
+# Build knitter-agent component
 #
 # Example:
 #         make knitter-agent
@@ -106,26 +103,17 @@ install-travis:
 	hack/install-tools.sh
 .PHONY: install-travis
 
-# Build and run unit tests
-#
-# Args:
-#   WHAT: Directory names to test.  All *_test.go files under these
-#     directories will be run.  If not specified, "everything" will be tested.
-#   TESTS: Same as WHAT.
-#   GOFLAGS: Extra flags to pass to 'go' when building.
-#   TESTFLAGS: Extra flags that should only be passed to hack/test-go.sh
+# Verify and Test knitter code
 #
 # Example:
 #   make check
-#   make test
-#   make check WHAT=pkg/docker TESTFLAGS=-v
 check: verify test	
 .PHONY: check
 
 # Run unit tests
 # Example:
 #   make test
-#   make test WHAT=pkg/docker TESTFLAGS=-v 
+#   make test WHAT=pkg/* TESTFLAGS=-v 
 test:
 	go test -timeout=20m -race ./pkg/... ./knitter-agent/... ./knitter-manager/... ./knitter-plugin/... $(BUILD_TAGS) $(GO_LDFLAGS) $(GO_GCFLAGS) 
 .PHONY: test
