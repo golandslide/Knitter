@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Knitter/pkg/common"
+	"github.com/HyperNetworks/Knitter/pkg/common"
 	"fmt"
 )
 
