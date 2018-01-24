@@ -8,6 +8,7 @@ import (
 func FooBarInvocation(str string) error {
 	if str == "true" {
 		fmt.Println("correct! man :)")
+		fmt.Println("correct! man :)")
 		return nil
 	}
 	fmt.Println("incorrect! man!!!")
