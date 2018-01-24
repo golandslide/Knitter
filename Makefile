@@ -32,12 +32,12 @@ test-build:
 	go build ./cmd/test.go
 .PHONY: test-build
 
+test-verify:verify
+.PHONY: test-verify
+
 test-test:
 	go test -v ./pkg/common
 .PHONY: test-test
-
-test-verify:verify
-.PHONY: test-verify
 
 # Build code.
 #
@@ -121,13 +121,6 @@ verify: gofmt golint govet
 strict-verify:gofmt lint govet
 .PHONY:strict-verify
 
-# Install travis dependencies
-#
-# Example:
-#   make install-travis
-install-travis:
-	hack/install-tools.sh
-.PHONY: install-travis
 
 # Build and run unit tests
 #
@@ -153,13 +146,12 @@ test:
 	go test -timeout=20m -race ./pkg/... ./knitter-agent/... ./knitter-manager/... ./knitter-plugin/... $(BUILD_TAGS) $(GO_LDFLAGS) $(GO_GCFLAGS) 
 .PHONY: test
 
-install-extra: install-gometalinter
-.PHONY: install-extra
+install-tools:install-gometalinter
+.PHONY: install-tools
 
 # install gometailinter tool
 # Example:
 # make install-gometalinter
-
 install-gometalinter:
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
