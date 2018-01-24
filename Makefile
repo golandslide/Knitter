@@ -22,6 +22,22 @@ ifndef GOPATH
 endif
 .PHONY: check-gopath
 
+# Test travis ci with test code
+#
+# Example:
+#     make test-build
+#     make test-verify
+#     make test-test    
+test-build:
+	go build ./cmd/test.go
+.PHONY: test-build
+
+test-test:
+	go test -v ./pkg/common
+.PHONY: test-test
+
+test-verify:verify
+.PHONY: test-verify
 
 # Build code.
 #
@@ -64,7 +80,7 @@ knitter-agent:
 #         make lint
 lint: check-gopath
 	@echo "checking lint"
-	@./hack/verify-lint.sh
+	hack/verify-lint.sh
 
 # Lint knitter code files with golint tool.
 #
@@ -72,7 +88,7 @@ lint: check-gopath
 #         make golint
 golint: check-gopath
 	@echo "checking golint"
-	@./hack/verify-golint.sh
+	hack/verify-golint.sh
 
 # Format knitter code files with gofmt tool.
 # 
@@ -80,7 +96,7 @@ golint: check-gopath
 #         make gofmt
 gofmt:
 	@echo "checking gofmt"
-	@./hack/verify-gofmt.sh
+	hack/verify-gofmt.sh
 
 # Static check knitter code files 
 #
@@ -88,15 +104,22 @@ gofmt:
 #         make govet
 govet:
 	@echo "checking govet"
-	@./hack/verify-govet.sh
+	hack/verify-govet.sh
 
 
-# Verify if code is properly organized.
+# verify whether code is properly organized.
 #
 # Example:
 #         make verify
-verify: gofmt lint govet 
+verify: gofmt golint govet
 .PHONY: verify
+
+# strict-verify verify code is properly organized.
+#
+# Example:
+#         make strict-verify
+strict-verify:gofmt lint govet
+.PHONY:strict-verify
 
 # Install travis dependencies
 #
