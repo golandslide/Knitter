@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/HyperNetworks/Knitter/pkg/common"
 	"fmt"
+	"github.com/HyperNetworks/Knitter/pkg/common"
 )
 
 func main() {
