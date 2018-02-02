@@ -1,11 +1,12 @@
-#How to setup Knitter
-##Get all Knitter components
+# How to setup Knitter
+
+## Get all Knitter components
 Download tarball for the version you want to try. the download link **here**
 
 - knitter-plugin、knitter-agent、knitter-morinitor and knitter-manager are all of binaries for knitter networking.
 
 ```
-note：there is no command line tools for knitter networking solution.
+note：there is no command line tools for knitter networking solution now, but we will provide this tool in future version.
 ```
 
 ## Install Dependencies
