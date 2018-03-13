@@ -7,8 +7,8 @@ default: help
 help:
 	@echo "Usage: make <target>"
 	@echo
-	@echo "'build'          - Build all knitter related binaries(e.g. knitter-manager,knitter-agent,knitter-plugin)"
-	@echo " 'test'           - Test knitter with unit test"
+	@echo " 'build'          - Build all knitter related binaries(e.g. knitter-manager,knitter-agent,knitter-plugin)"
+	@echo " 'test-ut'        - Test knitter with unit test"
 	@echo " 'test-e2e'       - Test knitter with e2e test"
 	@echo " 'clean'          - Clean artifacts"
 	@echo " 'verify'         - Execute the source code verification tools(e.g. gofmt,lint,govet)"
@@ -21,6 +21,7 @@ ifndef GOPATH
         $(error GOPATH is not set)
 endif
 .PHONY: check-gopath
+
 
 # Test travis ci with test code
 #
@@ -35,9 +36,9 @@ test-build:
 test-verify:verify
 .PHONY: test-verify
 
-test-test:
+test-ut-test:
 	go test -v ./pkg/common
-.PHONY: test-test
+.PHONY: test-ut-test
 
 # Build code.
 #
@@ -122,19 +123,6 @@ strict-verify:gofmt lint govet
 .PHONY:strict-verify
 
 
-# Build and run unit tests
-#
-# Args:
-#   WHAT: Directory names to test.  All *_test.go files under these
-#     directories will be run.  If not specified, "everything" will be tested.
-#   TESTS: Same as WHAT.
-#   GOFLAGS: Extra flags to pass to 'go' when building.
-#   TESTFLAGS: Extra flags that should only be passed to hack/test-go.sh
-#
-# Example:
-#   make check
-#   make test
-#   make check WHAT=pkg/docker TESTFLAGS=-v
 check: verify test	
 .PHONY: check
 
@@ -142,9 +130,9 @@ check: verify test
 # Example:
 #   make test
 #   make test WHAT=pkg/docker TESTFLAGS=-v 
-test:
+test-ut:
 	go test -timeout=20m -race ./pkg/... ./knitter-agent/... ./knitter-manager/... ./knitter-plugin/... $(BUILD_TAGS) $(GO_LDFLAGS) $(GO_GCFLAGS) 
-.PHONY: test
+.PHONY: test-ut
 
 install-tools:install-gometalinter
 .PHONY: install-tools
@@ -155,7 +143,25 @@ install-tools:install-gometalinter
 install-gometalinter:
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
+# Deploy a dind kubernetes cluser
+# note: Leverage Mirantis kubeadm-dind-cluster
+# Example:
+# make deploy-dind-k8s
+deploy-dind-k8s:
+	./hack/dind-ci.sh up
+.PHONY: deploy-dind-k8s
 
+# Run knitter e2e test case
+# Example:
+# make test-e2e
+test-e2e:
+	./hack/run-robotframe-e2e.sh
+.PHONY: test-e2e
+
+# Just for test
+probe-test:
+	./hack/probe-test.sh
+.PHONY: probe-test
 
 # Remove all build artifacts.
 #
