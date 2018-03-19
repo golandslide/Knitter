@@ -1,16 +1,22 @@
+sudo: required
+
 language: go
+
+service:
+  - docker
 
 go:
   - 1.8.x
-  - master
+  - tip
 
 install:
   - make install-tools
 
 script:
-  - make test-build
   - make test-verify
-  - make test-test
-
-sudo: false
+  - make test-ut-test
+  - make test-build
+  - make deploy-dind-k8s
+  - make test-e2e
+  - make probe-test
 
