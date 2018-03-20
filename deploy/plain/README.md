@@ -1,12 +1,12 @@
 # How to setup Knitter
 
 ## Get all Knitter components
-Download tarball for the version you want to try. the download link **here**
+Download tarball from release page for the version you want to try. the download link **here**
 
 - knitter-plugin、knitter-agent、knitter-morinitor and knitter-manager are all of binaries for knitter networking.
 
 ```
-note：there is no command line tools for knitter networking solution now, but we will provide this tool in future version.
+Note：there is no any command line tool for knitter networking solution now, but we will provide this in future relase.
 ```
 
 ## Install Dependencies
@@ -49,33 +49,13 @@ knitter.json:
     "manager": {
       "etcd": {
         "api_version": 3,
-        "url": "http://192.169.1.75:10080",
-        "etcd_service_query_url": "http://192.169.1.75:10081/api/microservices/v1/services/etcd/version/v2"
+        "urls": "http://172.120.0.209:2379"
       },
       "self_service": {
-        "url": "http://192.169.1.75:10080/nw/v1"
+        "url": "http://172.120.0.209:9527/nw/v1"
       },
       "interval": {
         "senconds": "15"
-      },
-      "multiple_iaas_tenants": false,
-      "iaas": {
-        "embedded": false,
-        "vnfm": false,
-        "noauth_openstack": {
-          "enabled": false,
-          "config": {
-            "ip": "192.169.1.75",
-            "url": "http://192.169.1.75:10080/vnm/v2.0",
-            "tenant_id": "",
-            "default_network_type": "vlan"
-          }
-        }
-      },
-      "max_req_attach": "5",
-      "event_url": {
-        "platform": "http://192.169.1.75:10080/harvestor/v1/tenants/admin/events?type=plat",
-        "wiki": "http://wiki.zte.com.cn/pages/viewpage.action?pageId=17786624"
       },
       "net_quota": {
         "no_admin": "10",
@@ -93,7 +73,6 @@ Start knitter-manager as root:
 
 ## Start knitter-mornitor
 Start knitter-mornitor as root:
-
 
 ## Start knitter-agent
 knitter agent component has the same paras with knitter-manger
@@ -171,5 +150,3 @@ default directory is `/etc/cni/net.d`
     "type": "knitter"
 }
 ```
-
-

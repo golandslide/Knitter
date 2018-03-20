@@ -3,8 +3,7 @@ export PATH="$HOME/.kubeadm-dind-cluster:$PATH"
 kubectl get nodes
 ifconfig
 pwd
-kubectl create -f ./hack/create-testpod.yaml
-kubectl get pod
+kubectl create -f ./hack/nginx-pod.yaml
 kubectl get pod
 kubectl get pod
 

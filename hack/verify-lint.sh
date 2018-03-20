@@ -1,9 +1,10 @@
 #!/bin/bash
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
-for d in $(find . -type d -a \( -iwholename './pkg/*' -o -iwholename './knitter-agent/*' -o -iwholename './knitter-manager/*' -o -iwholename './knitter-plugin/*' \)); do
+for d in $(find . -type d -a \( -iwholename './pkg/*' -o -iwholename './knitter-agent/*' -o -iwholename './knitter-monitor/*' -o -iwholename './knitter-manager/*' -o -iwholename './knitter-plugin/*' \)); do
 	echo for directory ${d} ...
 	gometalinter \
 		 --exclude='error return value not checked.*(Close|Log|Print).*\(errcheck\)$' \
