@@ -1,22 +1,16 @@
-sudo: required
-
 language: go
-
-service:
-  - docker
 
 go:
   - 1.8.x
   - tip
 
-install:
-  - make install-tools
+
+before_install:
+  - go get -t -v ./...
 
 script:
-  - make test-verify
-  - make test-ut-test
-  - make test-build
-  - make deploy-dind-k8s
-  - make test-e2e
-  - make probe-test
+  - ./hack/cover.sh
 
+after_success:
+
+  - bash <(curl -s https://codecov.io/bash)

@@ -1,44 +1,26 @@
-OUT_DIR = _output
+OUT_DIR = _output/bin
 
 export GOFLAGS
 
+# all make sub options
 default: help
 
 help:
 	@echo "Usage: make <target>"
 	@echo
-	@echo " 'build'          - Build all knitter related binaries(e.g. knitter-manager,knitter-agent,knitter-plugin)"
+	@echo " 'build'          - Build all knitter related binaries(e.g. knitter-manager,knitter-agent,knitter-plugin,knitter-mornitor)"
 	@echo " 'test-ut'        - Test knitter with unit test"
 	@echo " 'test-e2e'       - Test knitter with e2e test"
-	@echo " 'clean'          - Clean artifacts"
+	@echo " 'clean'          - Clean all output artifacts"
 	@echo " 'verify'         - Execute the source code verification tools(e.g. gofmt,lint,govet)"
 	@echo " 'install-extra'  - Install tools used by verify(e.g. gometalinter)"
 
-
-
+# Ideally not needed this section
 check-gopath:
 ifndef GOPATH
         $(error GOPATH is not set)
 endif
 .PHONY: check-gopath
-
-
-# Test travis ci with test code
-#
-# Example:
-#     make test-build
-#     make test-verify
-#     make test-test    
-test-build:
-	go build ./cmd/test.go
-.PHONY: test-build
-
-test-verify:verify
-.PHONY: test-verify
-
-test-ut-test:
-	go test -v ./pkg/common
-.PHONY: test-ut-test
 
 # Build code.
 #
@@ -48,7 +30,7 @@ test-ut-test:
 # Example:
 #         make build
 #         make all
-all build: knitter-manager knitter-agent knitter-plugin
+all build: knitter-manager knitter-agent knitter-plugin knitter-monitor
 .PHONY: all build
 
 # Build knitter-plugin
@@ -56,7 +38,9 @@ all build: knitter-manager knitter-agent knitter-plugin
 # Example:
 #        make knitter-plugin
 knitter-plugin:
-	script/knitter.sh build
+	hack/build/plugin.sh build
+	mkdir -p ${OUT_DIR}
+	mv ./knitter-plugin/knitter-plugin   ${OUT_DIR}
 .PHONY: knitter-plugin
 
 # Build knitter-manager
@@ -64,14 +48,29 @@ knitter-plugin:
 # Example:
 #         make knitter-manager
 knitter-manager:
-	script/manager.sh build
+	hack/build/manager.sh build
+	mkdir -p ${OUT_DIR}
+	mv ./knitter-manager/knitter-manager   ${OUT_DIR}
 .PHONY: knitter-manager
+
+# Build knitter-monitor
+#
+# Example:
+#         make knitter-monitor
+knitter-monitor:
+	hack/build/monitor.sh build
+	mkdir -p ${OUT_DIR}
+	mv ./knitter-monitor/knitter-monitor   ${OUT_DIR}
+.PHONY: knitter-monitor
+
 # Build knitter-agent
 #
 # Example:
 #         make knitter-agent
 knitter-agent:
-	script/agent.sh build
+	hack/build/agent.sh build
+	mkdir -p ${OUT_DIR}
+	mv ./knitter-agent/knitter-agent   ${OUT_DIR}
 .PHONY: knitter-agent
 
 # Lint knitter code files. note that this lint process handled by gometalinter tools.
@@ -107,53 +106,67 @@ govet:
 	@echo "checking govet"
 	hack/verify-govet.sh
 
-
-# verify whether code is properly organized.
+# Verify whether code is properly organized.
 #
 # Example:
 #         make verify
-verify: gofmt golint govet
+verify: gofmt govet
 .PHONY: verify
 
-# strict-verify verify code is properly organized.
+# strict-verify do more strict verify process
 #
 # Example:
 #         make strict-verify
 strict-verify:gofmt lint govet
 .PHONY:strict-verify
 
-
-check: verify test	
+# Run verify and test process
+#
+# Example
+# make verify
+check: verify test-ut	
 .PHONY: check
 
 # Run unit tests
+# 
 # Example:
-#   make test
-#   make test WHAT=pkg/docker TESTFLAGS=-v 
+# make test-ut
 test-ut:
-	go test -timeout=20m -race ./pkg/... ./knitter-agent/... ./knitter-manager/... ./knitter-plugin/... $(BUILD_TAGS) $(GO_LDFLAGS) $(GO_GCFLAGS) 
+	go test -timeout=20m -race ./pkg/... ./knitter-agent/... ./knitter-manager/... ./knitter-monitor/... ./knitter-plugin/... $(BUILD_TAGS) $(GO_LDFLAGS) $(GO_GCFLAGS)
 .PHONY: test-ut
 
-install-tools:install-gometalinter
-.PHONY: install-tools
+# Run coverage checking
+#
+# Example:
+#make test-cover
+test-cover:
+	./hack/cover.sh
+.PHTONY: test-cover
+
+install-extra:install-gometalinter
+.PHONY: install-extra
 
 # install gometailinter tool
+#
 # Example:
 # make install-gometalinter
 install-gometalinter:
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
+.PHONY: install-gometalinter
+
 # Deploy a dind kubernetes cluser
 # note: Leverage Mirantis kubeadm-dind-cluster
 # Example:
-# make deploy-dind-k8s
-deploy-dind-k8s:
-	./hack/dind-ci.sh up
-.PHONY: deploy-dind-k8s
+# make deploy-k8s
+deploy-k8s:
+	./hack/dind-cluster-v1.8.sh up
+.PHONY: deploy-k8s
 
 # Run knitter e2e test case
 # Example:
 # make test-e2e
+# NOTE THAT: knitter test-e2e is experimental now.
 test-e2e:
 	./hack/run-robotframe-e2e.sh
 .PHONY: test-e2e
@@ -168,14 +181,7 @@ probe-test:
 # Example:
 #   make clean
 clean:
-	rm -rf $(OUT_DIR)
+	rm -rf ./_output
 .PHONY: clean
 
-# Build the release.
-#
-# Example:
-#   make release
-release: clean
-	hack/build-release.sh
-	hack/extract-release.sh
-.PHONY: release
+
