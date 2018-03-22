@@ -1,5 +1,9 @@
 # Knitter
 ![logo](./docs/images/knitter.png)
+
+[![Build Status](https://api.travis-ci.org/HyperNetworks/Knitter.svg?style=flat-square)](https://travis-ci.org/HyperNetworks/Knitter)
+[![Go Report Card](https://goreportcard.com/badge/github.com/HyperNetworks/Knitter?style=flat-square)](https://goreportcard.com/report/github.com/HyperNetworks/Knitter)
+
 ## Overview
 - is a [CNI](https://github.com/containernetworking/cni) plugin to support multiple network interfaces in a [Kubernetes](https://github.com/kubernetes/kubernetes) pod.
 - provides the ability for a pod (e.g., VNF in pod) to attach to high-performance networks. 
