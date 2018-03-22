@@ -1,16 +1,20 @@
+sudo: required
+
 language: go
 
+service:
+  - docker
+
 go:
-  - 1.8.x
-  - tip
+  - 1.9.x
+  - master
 
-
-before_install:
-  - go get -t -v ./...
+install:
+  - make install-extra
+  - go get github.com/mattn/goveralls
 
 script:
-  - ./hack/cover.sh
+  - make verify
+  - make test-cover
+  - make build
 
-after_success:
-
-  - bash <(curl -s https://codecov.io/bash)

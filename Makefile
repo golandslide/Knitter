@@ -140,7 +140,8 @@ test-ut:
 # Example:
 #make test-cover
 test-cover:
-	./hack/cover.sh
+	PATH="$HOME/gopath/bin:$PATH"
+	./hack/cover.sh --coveralls
 .PHTONY: test-cover
 
 install-extra:install-gometalinter
@@ -182,6 +183,7 @@ probe-test:
 #   make clean
 clean:
 	rm -rf ./_output
+	rm -rf .cover
 .PHONY: clean
 
 

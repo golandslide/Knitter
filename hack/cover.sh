@@ -10,6 +10,7 @@
 #     --coveralls Push coverage statistics to coveralls.io
 #
 
+
 set -e
 
 workdir=.cover
@@ -38,7 +39,7 @@ push_to_coveralls() {
     goveralls -coverprofile="$profile"
 }
 
-generate_cover_data $(go list ./...)
+generate_cover_data $(go list ./... | grep -v vendor)
 show_cover_report func
 case "$1" in
 "")
